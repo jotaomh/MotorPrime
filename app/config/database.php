@@ -16,8 +16,8 @@ if (file_exists($envFile)) {
 
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'motor_prime');
-define('DB_USER', $_ENV['DB_USER'] ?? 'root');
-define('DB_PASS', $_ENV['DB_PASS'] ?? '');
+define('DB_USER', $_ENV['DB_USER'] ?? 'dev');
+define('DB_PASS', $_ENV['DB_PASS'] ?? '1234');
 define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8mb4');
 
 define('SESSION_NAME', $_ENV['SESSION_NAME'] ?? 'MOTOR_PRIME');

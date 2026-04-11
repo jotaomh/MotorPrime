@@ -543,26 +543,37 @@ if ($action === 'delete_peca') {
             theme: {
                 extend: {
                     colors: {
+                        dark: '#0a0a0a',
+                        darker: '#121212',
+                        darkGray: '#1a1a1a',
+                        darkMid: '#2a2a2a',
                         primary: '#1e3a5f',
-                        secondary: '#2d5a87',
-                        accent: '#f59e0b'
+                        primaryLight: '#2d5a87',
+                        accent: '#3b82f6',
+                        accentLight: '#60a5fa'
                     }
                 }
             }
         }
     </script>
-    <script src="https://code.jquery.com/jquery-3.7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; }
+        .dark-bg {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-    <nav class="bg-primary text-white shadow-lg">
+<body class="dark-bg text-gray-100 min-h-screen">
+    <nav class="bg-darker border-b border-gray-800">
         <div class="container mx-auto px-4 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
-                    <span class="text-xl font-bold">Motor Prime</span>
+                    <span class="text-xl font-bold text-white">Motor Prime</span>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="text-sm"><?= auth()['nome'] ?> (<?= auth()['cargo'] ?>)</span>
-                    <a href="login.php?action=logout" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm">Sair</a>
+                    <span class="text-sm text-gray-400"><?= auth()['nome'] ?> (<?= auth()['cargo'] ?>)</span>
+                    <a href="login.php?action=logout" class="bg-red-900 hover:bg-red-800 px-3 py-1 rounded text-sm text-red-400">Sair</a>
                 </div>
             </div>
         </div>
@@ -570,23 +581,23 @@ if ($action === 'delete_peca') {
     
     <div class="container mx-auto px-4 py-6">
         <div class="flex flex-wrap gap-2 mb-6">
-            <a href="dashboard.php" class="px-4 py-2 rounded <?= $page === 'dashboard' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Dashboard</a>
-            <a href="dashboard.php?page=clientes" class="px-4 py-2 rounded <?= $page === 'clientes' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Clientes</a>
-            <a href="dashboard.php?page=veiculos" class="px-4 py-2 rounded <?= $page === 'veiculos' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Veículos</a>
+            <a href="dashboard.php" class="px-4 py-2 rounded <?= $page === 'dashboard' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Dashboard</a>
+            <a href="dashboard.php?page=clientes" class="px-4 py-2 rounded <?= $page === 'clientes' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Clientes</a>
+            <a href="dashboard.php?page=veiculos" class="px-4 py-2 rounded <?= $page === 'veiculos' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Veículos</a>
             <?php if (isAdmin()): ?>
-            <a href="dashboard.php?page=funcionarios" class="px-4 py-2 rounded <?= $page === 'funcionarios' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Funcionários</a>
+            <a href="dashboard.php?page=funcionarios" class="px-4 py-2 rounded <?= $page === 'funcionarios' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Funcionários</a>
             <?php endif; ?>
-            <a href="dashboard.php?page=fornecedores" class="px-4 py-2 rounded <?= $page === 'fornecedores' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Fornecedores</a>
-            <a href="dashboard.php?page=os" class="px-4 py-2 rounded <?= strpos($page, 'os') === 0 ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Ordens de Serviço</a>
-            <a href="dashboard.php?page=estoque" class="px-4 py-2 rounded <?= $page === 'estoque' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Estoque</a>
-            <a href="dashboard.php?page=financeiro" class="px-4 py-2 rounded <?= $page === 'financeiro' ? 'bg-primary text-white' : 'bg-white text-gray-700 hover:bg-gray-50' ?>">Financeiro</a>
+            <a href="dashboard.php?page=fornecedores" class="px-4 py-2 rounded <?= $page === 'fornecedores' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Fornecedores</a>
+            <a href="dashboard.php?page=os" class="px-4 py-2 rounded <?= strpos($page, 'os') === 0 ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Ordens de Serviço</a>
+            <a href="dashboard.php?page=estoque" class="px-4 py-2 rounded <?= $page === 'estoque' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Estoque</a>
+            <a href="dashboard.php?page=financeiro" class="px-4 py-2 rounded <?= $page === 'financeiro' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Financeiro</a>
         </div>
         
         <?php if (flash('error')): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"><?= flash('error') ?></div>
+            <div class="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded mb-4"><?= flash('error') ?></div>
         <?php endif; ?>
         <?php if (flash('success')): ?>
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"><?= flash('success') ?></div>
+            <div class="bg-green-900/30 border border-green-800 text-green-400 px-4 py-3 rounded mb-4"><?= flash('success') ?></div>
         <?php endif; ?>
         
         <?php include __DIR__ . '/views/page_' . $page . '.php'; ?>

@@ -1,16 +1,16 @@
 <?php extract($dados); ?>
-<h1 class="text-2xl font-bold text-gray-800 mb-6">Veículos</h1>
+<h1 class="text-2xl font-bold text-white mb-6">Veículos</h1>
 
-<div class="bg-white rounded-lg shadow mb-6">
-    <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold">Novo Veículo</h2>
+<div class="bg-darker rounded-lg shadow mb-6 border border-gray-800">
+    <div class="p-4 border-b border-gray-800">
+        <h2 class="text-lg font-semibold text-white">Novo Veículo</h2>
     </div>
     <div class="p-4">
         <form method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input type="hidden" name="action_form" value="veiculos_store">
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Cliente *</label>
-                <select name="cliente_id" required class="w-full border rounded px-3 py-2">
+                <label class="block text-sm text-gray-400 mb-1">Cliente *</label>
+                <select name="cliente_id" required class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
                     <option value="">Selecione</option>
                     <?php foreach ($clientes as $c): ?>
                     <option value="<?= $c['id'] ?>"><?= sanitize($c['nome']) ?></option>
@@ -18,48 +18,48 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Placa *</label>
-                <input type="text" name="placa" required class="w-full border rounded px-3 py-2 uppercase plate-mask" placeholder="ABC-1234" maxlength="8">
+                <label class="block text-sm text-gray-400 mb-1">Placa *</label>
+                <input type="text" name="placa" required class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white uppercase focus:border-accent focus:outline-none plate-mask" placeholder="ABC-1234" maxlength="8">
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Marca *</label>
-                <input type="text" name="marca" required class="w-full border rounded px-3 py-2" placeholder="Volkswagen">
+                <label class="block text-sm text-gray-400 mb-1">Marca *</label>
+                <input type="text" name="marca" required class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Modelo *</label>
-                <input type="text" name="modelo" required class="w-full border rounded px-3 py-2" placeholder="Gol">
+                <label class="block text-sm text-gray-400 mb-1">Modelo *</label>
+                <input type="text" name="modelo" required class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Ano *</label>
-                <input type="number" name="ano" required class="w-full border rounded px-3 py-2" placeholder="2020" min="1900" max="2100">
+                <label class="block text-sm text-gray-400 mb-1">Ano *</label>
+                <input type="number" name="ano" required class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">Cor</label>
-                <input type="text" name="cor" class="w-full border rounded px-3 py-2" placeholder="Preto">
+                <label class="block text-sm text-gray-400 mb-1">Cor</label>
+                <input type="text" name="cor" class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
             </div>
             <div>
-                <label class="block text-sm text-gray-600 mb-1">KM</label>
-                <input type="number" name="km" class="w-full border rounded px-3 py-2" placeholder="0">
+                <label class="block text-sm text-gray-400 mb-1">KM</label>
+                <input type="number" name="km" class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none">
             </div>
             <div class="md:col-span-2">
-                <label class="block text-sm text-gray-600 mb-1">Observações</label>
-                <textarea name="observacoes" rows="1" class="w-full border rounded px-3 py-2"></textarea>
+                <label class="block text-sm text-gray-400 mb-1">Observações</label>
+                <textarea name="observacoes" rows="1" class="w-full bg-darkGray border border-gray-700 rounded px-3 py-2 text-white focus:border-accent focus:outline-none"></textarea>
             </div>
             <div class="md:col-span-3">
-                <button type="submit" class="bg-primary text-white px-6 py-2 rounded hover:bg-secondary">Cadastrar Veículo</button>
+                <button type="submit" class="bg-accent hover:bg-accentLight text-white px-6 py-2 rounded font-semibold transition">Cadastrar Veículo</button>
             </div>
         </form>
     </div>
 </div>
 
-<div class="bg-white rounded-lg shadow">
-    <div class="p-4 border-b">
-        <h2 class="text-lg font-semibold">Lista de Veículos</h2>
+<div class="bg-darker rounded-lg shadow border border-gray-800">
+    <div class="p-4 border-b border-gray-800">
+        <h2 class="text-lg font-semibold text-white">Lista de Veículos</h2>
     </div>
     <div class="p-4 overflow-x-auto">
         <table class="w-full">
             <thead>
-                <tr class="text-left text-gray-500 text-sm border-b">
+                <tr class="text-left text-gray-500 text-sm border-b border-gray-800">
                     <th class="pb-2">Placa</th>
                     <th class="pb-2">Marca/Modelo</th>
                     <th class="pb-2">Ano</th>
@@ -71,15 +71,15 @@
             </thead>
             <tbody>
                 <?php foreach ($veiculos as $v): ?>
-                <tr class="border-b">
-                    <td class="py-2 font-mono"><?= formatPlate($v['placa']) ?></td>
+                <tr class="border-b border-gray-800">
+                    <td class="py-2 font-mono text-accent"><?= formatPlate($v['placa']) ?></td>
                     <td class="py-2"><?= sanitize($v['marca']) ?> <?= sanitize($v['modelo']) ?></td>
                     <td class="py-2"><?= $v['ano'] ?></td>
                     <td class="py-2"><?= sanitize($v['cor'] ?? '-') ?></td>
                     <td class="py-2"><?= number_format($v['km'], 0, ',', '.') ?></td>
                     <td class="py-2"><?= sanitize($v['cliente_nome']) ?></td>
                     <td class="py-2">
-                        <button onclick="editVeiculo(<?= $v['id'] ?>, <?= $v['cliente_id'] ?>, '<?= sanitize($v['placa']) ?>', '<?= sanitize($v['marca']) ?>', '<?= sanitize($v['modelo']) ?>', <?= $v['ano'] ?>, '<?= sanitize($v['cor'] ?? '') ?>', <?= $v['km'] ?>, '<?= sanitize($v['observacoes'] ?? '') ?>')" class="text-blue-600 hover:underline text-sm">Editar</button>
+                        <button onclick="editVeiculo(<?= $v['id'] ?>, <?= $v['cliente_id'] ?>, '<?= sanitize($v['placa']) ?>', '<?= sanitize($v['marca']) ?>', '<?= sanitize($v['modelo']) ?>', <?= $v['ano'] ?>, '<?= sanitize($v['cor'] ?? '') ?>', <?= $v['km'] ?>, '<?= sanitize($v['observacoes'] ?? '') ?>')" class="text-accent hover:text-accentLight text-sm">Editar</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -91,30 +91,30 @@
     </div>
 </div>
 
-<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg p-6 w-full max-w-lg">
-        <h3 class="text-lg font-bold mb-4">Editar Veículo</h3>
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div class="bg-darker border border-gray-700 rounded-lg p-6 w-full max-w-lg">
+        <h3 class="text-lg font-bold mb-4 text-white">Editar Veículo</h3>
         <form method="POST">
             <input type="hidden" name="action_form" value="veiculos_update">
             <input type="hidden" name="id" id="editId">
             <div class="grid grid-cols-2 gap-3">
-                <select name="cliente_id" id="editClienteId" required class="border rounded px-3 py-2">
+                <select name="cliente_id" id="editClienteId" required class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
                     <option value="">Selecione</option>
                     <?php foreach ($clientes as $c): ?>
                     <option value="<?= $c['id'] ?>"><?= sanitize($c['nome']) ?></option>
                     <?php endforeach; ?>
                 </select>
-                <input type="text" name="placa" id="editPlaca" required class="border rounded px-3 py-2 uppercase">
-                <input type="text" name="marca" id="editMarca" required class="border rounded px-3 py-2">
-                <input type="text" name="modelo" id="editModelo" required class="border rounded px-3 py-2">
-                <input type="number" name="ano" id="editAno" required class="border rounded px-3 py-2">
-                <input type="text" name="cor" id="editCor" class="border rounded px-3 py-2">
-                <input type="number" name="km" id="editKm" class="border rounded px-3 py-2">
-                <input type="text" name="observacoes" id="editObs" class="border rounded px-3 py-2 col-span-2">
+                <input type="text" name="placa" id="editPlaca" required class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white uppercase">
+                <input type="text" name="marca" id="editMarca" required class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
+                <input type="text" name="modelo" id="editModelo" required class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
+                <input type="number" name="ano" id="editAno" required class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
+                <input type="text" name="cor" id="editCor" class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
+                <input type="number" name="km" id="editKm" class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white">
+                <input type="text" name="observacoes" id="editObs" class="bg-darkGray border border-gray-700 rounded px-3 py-2 text-white col-span-2">
             </div>
             <div class="mt-4 flex gap-2">
-                <button type="submit" class="bg-primary text-white px-4 py-2 rounded">Salvar</button>
-                <button type="button" onclick="closeModal()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
+                <button type="submit" class="bg-accent text-white px-4 py-2 rounded">Salvar</button>
+                <button type="button" onclick="closeModal()" class="bg-gray-700 text-white px-4 py-2 rounded">Cancelar</button>
             </div>
         </form>
     </div>
