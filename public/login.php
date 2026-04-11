@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+// Limpar mensagens antigas da sessão
+unset($_SESSION['flash'], $_SESSION['flash_type']);
+
 require_once __DIR__ . '/../app/config/database.php';
 
 $action = $_GET['action'] ?? 'show';
@@ -43,10 +46,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'login') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
+    $token = sanitize($_POST['token'] ?? '');
     $nome = sanitize($_POST['nome'] ?? '');
     $email = sanitize($_POST['email'] ?? '');
     $senha = $_POST['senha'] ?? '';
-    $cargo = sanitize($_POST['cargo'] ?? 'vendedor');
+
+    if (empty($token)) {
+        flash('error', 'Token de convite necessário');
+        header('Location: login.php?action=register');
+        exit;
+    }
+
+    // Verify token
+    $db = db();
+    $stmt = $db->query(
+        "SELECT * FROM tokens_cadastro WHERE token = ? AND used = 0 AND expires_at > NOW()",
+        [$token]
+    );
+    $tokenData = $stmt->fetch();
+
+    if (!$tokenData) {
+        flash('error', 'Token inválido ou expirado');
+        header('Location: login.php?action=register');
+        exit;
+    }
+
+    $cargo = $tokenData['cargo']; // Use cargo from token
 
     if (empty($nome) || empty($email) || empty($senha)) {
         flash('error', 'Preencha todos os campos');
@@ -54,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
         exit;
     }
 
-    $db = db();
     $stmt = $db->query("SELECT id FROM usuarios WHERE email = ?", [$email]);
     if ($stmt->fetch()) {
         flash('error', 'Email já cadastrado');
@@ -67,6 +91,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
         "INSERT INTO usuarios (nome, email, senha, cargo) VALUES (?, ?, ?, ?)",
         [$nome, $email, $senhaHash, $cargo]
     );
+
+    // Mark token as used
+    $db->query("UPDATE tokens_cadastro SET used = 1 WHERE id = ?", [$tokenData['id']]);
 
     flash('success', 'Usuário cadastrado com sucesso! Faça login.');
     header('Location: login.php');
@@ -179,17 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
                     </svg>
                     <h1 class="text-2xl font-bold text-white">Bem-vindo</h1>
                     <p class="text-gray-400 text-sm mt-1">Acesse sua conta para continuar</p>
-                </div>
-
-                <!-- Tabs -->
-                <div class="flex mb-6 p-1 bg-darker rounded-lg">
-                    <button onclick="showTab('login')" id="tab-login" class="flex-1 py-2 rounded-md text-sm font-medium transition text-white tab-active">
-                        Entrar
-                    </button>
-                    <button onclick="showTab('register')" id="tab-register" class="flex-1 py-2 rounded-md text-sm font-medium transition text-gray-400 hover:text-white">
-                        Cadastrar
-                    </button>
-                </div>
+</div>
 
                 <!-- Alerts -->
                 <?php if (flash('error')): ?>
@@ -229,38 +246,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
                     </div>
                 </form>
 
-                <!-- Register Form -->
-                <form id="form-register" method="POST" action="login.php?action=register" class="hidden">
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">Nome Completo</label>
-                            <input type="text" name="nome" required placeholder="Seu nome"
-                                class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">Email</label>
-                            <input type="email" name="email" required placeholder="seu@email.com"
-                                class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">Senha</label>
-                            <input type="password" name="senha" required placeholder="••••••••"
-                                class="input-field w-full px-4 py-3 rounded-lg text-white placeholder-gray-600">
-                        </div>
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">Cargo</label>
-                            <select name="cargo" class="input-field w-full px-4 py-3 rounded-lg text-white">
-                                <option value="vendedor">Vendedor</option>
-                                <option value="mecanico">Mecânico</option>
-                                <option value="admin">Administrador</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn-primary w-full py-3 rounded-lg font-semibold text-white">
-                            Criar Conta
-                        </button>
-                    </div>
-                </form>
-
                 <!-- Divider -->
                 <div class="flex items-center my-6">
                     <div class="flex-1 border-t border-gray-800"></div>
@@ -268,8 +253,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
                     <div class="flex-1 border-t border-gray-800"></div>
                 </div>
 
+                <!-- Cadastrar Button -->
+                <div class="text-center">
+                    <p class="text-gray-400 text-sm mb-4">Novo funcionário?</p>
+                    <a href="cadastrar.php" class="block w-full border border-accent text-accent hover:bg-accent hover:text-white py-3 rounded-lg font-semibold text-center transition">
+                        Criar Conta
+                    </a>
+                </div>
+
                 <!-- Demo Access -->
-                <div class="bg-darker rounded-lg p-4 text-center">
+                <div class="bg-darker rounded-lg p-4 text-center mt-6">
                     <p class="text-gray-500 text-sm mb-2">Acesso demonstração</p>
                     <p class="text-gray-400 text-xs">Email: admin@motorprime.com</p>
                     <p class="text-gray-400 text-xs">Senha: password</p>
@@ -293,28 +286,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $action === 'register') {
     </footer>
 
     <script>
-        function showTab(tab) {
-            const loginForm = document.getElementById('form-login');
-            const registerForm = document.getElementById('form-register');
-            const loginTab = document.getElementById('tab-login');
-            const registerTab = document.getElementById('tab-register');
-            
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-                loginTab.classList.add('tab-active', 'text-white');
-                loginTab.classList.remove('text-gray-400');
-                registerTab.classList.remove('tab-active', 'text-white');
-                registerTab.classList.add('text-gray-400');
-            } else {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
-                registerTab.classList.add('tab-active', 'text-white');
-                registerTab.classList.remove('text-gray-400');
-                loginTab.classList.remove('tab-active', 'text-white');
-                loginTab.classList.add('text-gray-400');
-            }
-        }
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('[class*="bg-red-900"], [class*="bg-green-900"]');
+            alerts.forEach(function(alert) {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(function() { alert.remove(); }, 500);
+            });
+        }, 5000);
     </script>
 </body>
 </html>

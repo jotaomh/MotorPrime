@@ -1,238 +1,114 @@
 # Motor Prime - Sistema de Gestão para Oficina Mecânica
 
-Sistema web completo para gestão de oficina mecânica e loja de autopeças desenvolvido em PHP 8.2+ com arquitetura MVC.
+Sistema web completo para gestão de oficina mecânica e loja de autopeças.
 
 ## Tecnologias
 
 - **Backend**: PHP 8.2+ (POO)
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
 - **Estilização**: Tailwind CSS (via CDN)
-- **Banco de Dados**: MySQL / MariaDB com PDO
+- **Banco de Dados**: MySQL / MariaDB
 
 ## Estrutura de Pastas
 
 ```
 motor-prime/
 ├── public/
-│   ├── index.php          # Redirecionamento
-│   ├── login.php         # Página de login
-│   ├── dashboard.php    # Dashboard principal (single-page)
-│   ├── api.php         # API REST para buscas AJAX
-│   └── assets/
-│       └── js/main.js   # JavaScript (máscaras, modais)
+│   ├── index.php          # Página institucional
+│   ├── login.php          # Login de funcionários
+│   ├── cadastrar.php      # Cadastro de funcionários (via token)
+│   ├── dashboard.php      # Painel administrativo
+│   ├── cliente.php         # Login/Cadastro cliente
+│   ├── cliente_dashboard.php  # Área do cliente
+│   ├── admin_tokens.php   # Gerenciar tokens (Admin)
+│   ├── api.php           # API REST
+│   └── assets/js/main.js
 ├── app/
-│   ├── config/
-│   │   └── database.php     # Conexão PDO + helpers
-│   ├── controllers/         # Controladores (MVC)
-│   │   ├── AuthController.php
-│   │   ├── ClienteController.php
-│   │   ├── DashboardController.php
-│   │   ├── FinanceiroController.php
-│   │   ├── FornecedorController.php
-│   │   ├── FuncionarioController.php
-│   │   ├── OSController.php
-│   │   ├── PecaController.php
-│   │   └── VeiculoController.php
+│   ├── config/database.php
+│   ├── controllers/
+│   ├── helpers/Permissao.php
 │   ├── middleware/
-│   │   └── auth.php        # Middleware de autenticação
-│   └── views/
-│       ├── page_dashboard.php
-│       ├── page_clientes.php
-│       ├── page_veiculos.php
-│       ├── page_funcionarios.php
-│       ├── page_fornecedores.php
-│       ├── page_os.php
-│       ├── page_os_edit.php
-│       ├── page_estoque.php
-│       └── page_financeiro.php
-├── database.sql          # Script do banco + dados de exemplo
-├── .env                # Variáveis de ambiente
-├── .env.example        # Modelo de configuração
-├── composer.json       # Dependências (opcional)
-└── README.md          # Este arquivo
+│   └── views/page_*.php
+├── database.sql
+├── .env
+└── README.md
 ```
 
 ## Instalação
 
-### 1. Copie o projeto
+### 1. Configurar Banco
 
 ```bash
-cd /var/www/html
-# Clone ou copie a pasta motor-prime para cá
+mysql -u root -pSUA_SENHA < motor-prime/database.sql
 ```
 
-### 2. Configure o banco de dados
+### 2. Configurar .env
 
-2.1. Crie o banco de dados:
-```bash
-mysql -u root -p < motor-prime/database.sql
-```
-
-2.2. Edite o arquivo `.env` com suas configurações MySQL:
 ```env
 DB_HOST=localhost
 DB_NAME=motor_prime
 DB_USER=root
-DB_PASS=sua_senha_aqui
+DB_PASS=sua_senha
 DB_CHARSET=utf8mb4
 ```
 
-### 3. Configure o servidor web
+### 3. Acessar
 
-Configure o Apache ou Nginx para servir a pasta `public/`.
+- **Sistema**: `http://localhost/motor-prime/public/`
+- **Login Admin**: `admin@motorprime.com` / `password`
 
-**Exemplo Apache (VirtualHost):**
-```apache
-<VirtualHost *:80>
-    DocumentRoot /var/www/html/motor-prime/public
-    ServerName motorprime.local
-    <Directory /var/www/html/motor-prime/public>
-        AllowOverride All
-        Require all granted
-    </Directory>
-</VirtualHost>
-```
+## Fluxo de Usuário
 
-**Ou use o .htaccess na pasta public/:**
-```apache
-RewriteEngine On
-RewriteBase /motor-prime/public/
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [L]
-```
+### Área Pública
+1. **Index** (`index.php`) - Apresentação da empresa
+2. **Área do Cliente** (`cliente.php`) - Login/cadastro de clientes
+3. **Login Funcionário** (`login.php`) - Login de funcionários
 
-### 4. Acesse o sistema
+### Sistema Interno
+1. **Admin** (Dashboard completo)
+   - Dashboard, Clientes, Veículos, Funcionários, Fornecedores, OS, Estoque, Financeiro, Pedidos, Tokens
 
-- **URL**: http://localhost/motor-prime/public/login.php
-- **Usuário Admin**: admin@motorprime.com
-- **Senha**: password
+2. **Mecânico**
+   - Dashboard, Clientes, Veículos, Ordens de Serviço
+
+3. **Vendedor**
+   - Dashboard, Clientes, Veículos, Estoque, Financeiro
+
+## Sistema de Tokens
+
+Para cadastrar novos funcionários:
+
+1. Admin acessa **Dashboard** → **Tokens**
+2. Gera token para cargo específico (Mecânico/Vendedor)
+3. Compartilha link: `cadastrar.php?token=TOKEN`
+4. Funcionário completa o cadastro
 
 ## Funcionalidades
 
-### 🔐 Autenticação
-- Login com email e senha (password_hash/BCRYPT)
-- Sessões PHP seguras
-- Níveis de acesso: Admin, Mecânico, Vendedor
-- Apenas Admin gerencia usuários
+| Módulo | Descrição |
+|--------|------------|
+| Dashboard | Visão geral com métricas |
+| Clientes | CRUD completo |
+| Veículos | Vinculados a clientes |
+| Funcionários | Apenas Admin |
+| Fornecedores | CRUD completo |
+| Ordens de Serviço | OS completa com serviços e peças |
+| Estoque | Controle de peças |
+| Financeiro | Faturamento e vendas |
 
-### 📊 Dashboard
-- Cards informativos: OS em andamento, peças estoque baixo
-- Faturamento do dia e do mês
-- Status das OS (Orçamento, Aprovado, Em Execução, Finalizado, Entregue)
-- Lista de OS recentes
+## Banco de Dados
 
-### 👥 Clientes
-- Cadastro: Nome, CPF/CNPJ, telefone, email, endereço, observações
-- Máscaras automáticas para CPF, CNPJ, telefone
-- Edição inline via modal
+Tabelas principais:
+- `usuarios` - Funcionários do sistema
+- `clientes` - Clientes
+- `veiculos` - Veículos dos clientes
+- `fornecedores` - Fornecedores
+- `pecas` - Peças em estoque
+- `ordens_servico` - Ordens de serviço
+- `tokens_cadastro` - Tokens para cadastrar funcionários
 
-### 🚗 Veículos
-- Cadastro vinculado ao cliente
-- Placa formato brasileiro (ABC-1234)
-- Marca, modelo, ano, cor, KM
-- Busca por cliente
+## Credits
 
-### 👷 Funcionários (Admin)
-- Nome, email, cargo (Admin/Mecânico/Vendedor)
-- Apenas Admin pode gerenciar
-- Não pode excluir a si mesmo
-
-### 📦 Fornecedores
-- Nome, CNPJ, telefone, email, endereço
-- Vinculados às peças
-
-### 🔧 Ordens de Serviço
-- Criar OS vinculada a Cliente + Veículo
-- Adicionar serviços (mão de obra) com valores
-- Adicionar peças (desconta automaticamente do estoque)
-- Status流转: Orçamento → Aprovado → Em Execução → Finalizado → Entregue
-- Cálculo automático: mão de obra + peças = total
-- Forma de pagamento: Dinheiro, PIX, Cartão
-
-### 📦 Estoque de Peças
-- Código, descrição, marca, categoria
-- Preço custo e preço venda
-- Controle de quantidade
-- Estoque mínimo (alerta automático)
-- Entrada de peças (compra)
-- Histórico de movimentações
-- Venda de balcão
-
-### 💰 Financeiro
-- Relatório de faturamento por período
-- Total de OS e valor total
-- Média por OS
-- Venda direta balcão
-- Faturamento por forma de pagamento
-
-## Estrutura do Banco
-
-### Tabelas:
-| Tabela | Descrição |
-|--------|-----------|
-| `usuarios` | Usuários do sistema (login) |
-| `clientes` | Clientes |
-| `veiculos` | Veículos dos clientes |
-| `fornecedores` | Fornecedores de peças |
-| `pecas` | Peças em estoque |
-| `ordens_servico` | Ordens de serviço |
-| `servicos_os` | Serviços realizados na OS |
-| `pecas_os` | Peças usadas na OS |
-| `estoque_movimentacoes` | Histórico de entrada/saída |
-| `vendas` | Vendas diretas (balcão) |
-
-### Dados de Exemplo Incluídos
-
-O `database.sql`Popula:
-- 1 usuário admin (admin@motorprime.com / password)
-- 2 fornecedores
-- 8 peças de exemplo
-- 3 clientes
-- 4 veículos
-
-##API Endpoints
-
-Buscas AJAX disponíveis:
-
-| Endpoint | Parâmetros | Descrição |
-|---------|------------|----------|
-| `api.php?action=veiculos&cliente_id=X` | - | Lista veículos do cliente |
-| `api.php?action=clientes&q=termo` | - | Busca clientes |
-| `api.php?action=pecas&q=termo` | - | Busca peças |
-
-## Observações
-
-- PDO com prepared statements (segurança contra SQLi)
-- Senhas hasheadas com BCRYPT
-- Formatações brasileiras automáticas:
-  - R$ (moeda): 1.234,56
-  - CPF: 000.000.000-00
-  - CNPJ: 00.000.000/0001-00
-  - Telefone: (00) 00000-0000
-  - Placa: ABC-1234
-- Design responsivo (mobile-first)
-- Código em português brasileiro
-- Tailwind CSS via CDN (sem build necessário)
-
-## Requisitos do Servidor
-
-- PHP 8.2+
-- MySQL 5.7+ ou MariaDB 10.3+
-- Extensões: pdo_mysql, session
-- Apache/Nginx com mod_rewrite (opcional)
-
-## Troubleshooting
-
-### Erro de conexão com banco
-Verifique as credenciais no arquivo `.env` e se o MySQL está rodando.
-
-### Erro de sessão
-Certifique-se que o diretório tem permissão de escrita ou que o PHP pode criar arquivos de sessão.
-
-### CSS não carrega
-Verifique a conexão com a internet (Tailwind CDN) ou configure um CSSoffline.
-
-## Licença
-
-MIT License - Feel free to use!
+- Desenvolvido em PHP 8.2+
+- Tailwind CSS via CDN
+- PDO para banco de dados

@@ -581,28 +581,85 @@ if ($action === 'delete_peca') {
     
     <div class="container mx-auto px-4 py-6">
         <div class="flex flex-wrap gap-2 mb-6">
-            <a href="dashboard.php" class="px-4 py-2 rounded <?= $page === 'dashboard' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Dashboard</a>
-            <a href="dashboard.php?page=clientes" class="px-4 py-2 rounded <?= $page === 'clientes' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Clientes</a>
-            <a href="dashboard.php?page=veiculos" class="px-4 py-2 rounded <?= $page === 'veiculos' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Veículos</a>
+            <?php
+            // Menu based on cargo
+            $menuItens = [
+                'dashboard' => ['nome' => 'Dashboard', 'page' => '', 'icon' => 'M3 12l2-2m0 0l2 2m-2-2l2 2m-2-2l-2-2m2 2l-2-2m0 0l2-2m-2 4h12m-9-9h6m-6 6h6'],
+                'clientes' => ['nome' => 'Clientes', 'page' => 'clientes', 'icon' => 'M12 4.462v3.058l.963.855 1.04 1.04v3.058'],
+                'veiculos' => ['nome' => 'Veículos', 'page' => 'veiculos', 'icon' => 'M5 17h9.5M18.5 17h1.5a1 1 0 001-1v-3a1 1 0 00-1-1h-1a1 1 0 00-1 1v3a1 1 0 001 1h1.5'],
+                'funcionarios' => ['nome' => 'Funcionários', 'page' => 'funcionarios', 'icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0'],
+                'fornecedores' => ['nome' => 'Fornecedores', 'page' => 'fornecedores', 'icon' => 'M8 17h8m-8 0h.01M4 17H2v-2h2m0-6h8m-8 0h-.01'],
+                'os' => ['nome' => 'Ordens', 'page' => 'os', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'],
+                'estoque' => ['nome' => 'Estoque', 'page' => 'estoque', 'icon' => 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'],
+                'financeiro' => ['nome' => 'Financeiro', 'page' => 'financeiro', 'icon' => 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1']
+            ];
+            
+            $cargo = auth()['cargo'] ?? '';
+            $permissaoAdmin = ($cargo === 'admin');
+            $permissaoMecanico = ($cargo === 'mecanico');
+            $permissaoVendedor = ($cargo === 'vendedor');
+            
+            $paginasPermitidas = [];
+            if ($cargo === 'admin') {
+                $paginasPermitidas = ['dashboard', 'clientes', 'veiculos', 'funcionarios', 'fornecedores', 'os', 'estoque', 'financeiro'];
+            } elseif ($cargo === 'mecanico') {
+                $paginasPermitidas = ['dashboard', 'clientes', 'veiculos', 'os'];
+            } elseif ($cargo === 'vendedor') {
+                $paginasPermitidas = ['dashboard', 'clientes', 'veiculos', 'estoque', 'financeiro'];
+            }
+            
+            foreach ($menuItens as $key => $menu):
+                if (!in_array($key, $paginasPermitidas)) continue;
+                
+                $isActive = ($page === $menu['page']) || ($key === 'os' && strpos($page, 'os') === 0);
+            ?>
+            <a href="dashboard.php?page=<?= $menu['page'] ?>" 
+               class="px-4 py-2 rounded flex items-center gap-2 <?= $isActive ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<?= $menu['icon'] ?>"/>
+                </svg>
+                <?= $menu['nome'] ?>
+            </a>
+            <?php endforeach; ?>
             <?php if (isAdmin()): ?>
-            <a href="dashboard.php?page=funcionarios" class="px-4 py-2 rounded <?= $page === 'funcionarios' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Funcionários</a>
+            <a href="admin_pedidos.php" 
+               class="px-4 py-2 rounded flex items-center gap-2 bg-darkGray text-gray-300 hover:bg-darkMid">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                Pedidos
+            </a>
+            <a href="admin_tokens.php" 
+               class="px-4 py-2 rounded flex items-center gap-2 bg-darkGray text-gray-300 hover:bg-darkMid">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-10.468 7.63M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h6.586a1 1 0 01.707.293l6.414 6.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Tokens
+            </a>
             <?php endif; ?>
-            <a href="dashboard.php?page=fornecedores" class="px-4 py-2 rounded <?= $page === 'fornecedores' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Fornecedores</a>
-            <a href="dashboard.php?page=os" class="px-4 py-2 rounded <?= strpos($page, 'os') === 0 ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Ordens de Serviço</a>
-            <a href="dashboard.php?page=estoque" class="px-4 py-2 rounded <?= $page === 'estoque' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Estoque</a>
-            <a href="dashboard.php?page=financeiro" class="px-4 py-2 rounded <?= $page === 'financeiro' ? 'bg-accent text-white' : 'bg-darkGray text-gray-300 hover:bg-darkMid' ?>">Financeiro</a>
         </div>
         
         <?php if (flash('error')): ?>
-            <div class="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded mb-4"><?= flash('error') ?></div>
+            <div class="flash-message bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded mb-4"><?= flash('error') ?></div>
         <?php endif; ?>
         <?php if (flash('success')): ?>
-            <div class="bg-green-900/30 border border-green-800 text-green-400 px-4 py-3 rounded mb-4"><?= flash('success') ?></div>
+            <div class="flash-message bg-green-900/30 border border-green-800 text-green-400 px-4 py-3 rounded mb-4"><?= flash('success') ?></div>
         <?php endif; ?>
         
         <?php include __DIR__ . '/views/page_' . $page . '.php'; ?>
     </div>
     
     <script src="assets/js/main.js"></script>
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(function() {
+            var messages = document.querySelectorAll('.flash-message');
+            messages.forEach(function(msg) {
+                msg.style.transition = 'opacity 0.5s';
+                msg.style.opacity = '0';
+                setTimeout(function() { msg.remove(); }, 500);
+            });
+        }, 5000);
+    </script>
 </body>
 </html>

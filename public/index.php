@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motor Prime - Oficina e Autopeças</title>
+    <title>Motor Prime - Oficina Mecânica e Autopeças</title>
+    <meta name="description" content="Motor Prime - Gestão profissional para oficina mecânica e loja de autopeças. Qualidade e confiança em primeiro lugar.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        dark: '#0a0a0a',
-                        darker: '#121212',
-                        darkGray: '#1a1a1a',
-                        darkMid: '#2a2a2a',
-                        primary: '#1e3a5f',
-                        primaryLight: '#2d5a87',
                         accent: '#3b82f6',
                         accentLight: '#60a5fa'
                     }
@@ -25,202 +20,168 @@
     </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-            min-height: 100vh;
-        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; }
         .hero-bg {
-            background: 
-                radial-gradient(ellipse at 20% 80%, rgba(30, 58, 95, 0.4) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
-                linear-gradient(135deg, #0a0a0a 0%, #121212 50%, #0a0a0a 100%);
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
         }
-        .glass {
-            background: rgba(26, 26, 26, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .fade-in {
-            animation: fadeIn 0.6s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .pulse-glow {
-            animation: pulseGlow 2s ease-in-out infinite;
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
-            50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.6); }
-        }
+        .fade-in { animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="hero-bg min-h-screen">
+<body class="hero-bg min-h-screen text-gray-100">
     <!-- Header -->
-    <header class="p-6 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <svg class="w-10 h-10 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-                <circle cx="12" cy="12" r="3"/>
-                <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
-            </svg>
-            <span class="text-xl font-bold text-white">Motor Prime</span>
-        </div>
-        <div class="flex items-center gap-6">
-            <a href="#features" class="text-gray-400 hover:text-white transition text-sm">Características</a>
-            <a href="login.php" class="bg-accent hover:bg-accentLight text-white px-5 py-2 rounded-lg font-semibold transition">Entrar</a>
+    <header class="p-6">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <svg class="w-10 h-10 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                </svg>
+                <span class="text-xl font-bold text-white">Motor Prime</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#sobre" class="text-gray-400 hover:text-white text-sm transition">Sobre</a>
+                <a href="#servicos" class="text-gray-400 hover:text-white text-sm transition">Serviços</a>
+                <a href="#contato" class="text-gray-400 hover:text-white text-sm transition">Contato</a>
+                <a href="cliente.php" class="text-gray-300 hover:text-white text-sm transition">Área do Cliente</a>
+                <a href="login.php" class="bg-accent hover:bg-blue-500 px-5 py-2 rounded-lg text-sm font-semibold transition">Funcionário</a>
+            </div>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <main class="flex items-center justify-center p-6 min-h-[70vh]">
-        <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <!-- Left - Company Info -->
-            <div class="fade-in text-center lg:text-left">
-                <div class="mb-6">
-                    <span class="bg-primary/20 text-accentLight px-4 py-1 rounded-full text-sm">Gestão Profissional</span>
-                </div>
-                <h1 class="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
-                    Oficina Mecânica<br>
-                    <span class="text-accent">+ Autopeças</span>
+    <!-- Hero -->
+    <section class="max-w-6xl mx-auto px-6 py-16 md:py-24">
+        <div class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="fade-in">
+                <span class="bg-accent/20 text-accent px-4 py-1 rounded-full text-sm">Desde 2020</span>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mt-4 mb-4">
+                    Cuidamos do seu<br>
+                    <span class="text-accent">veículo como família</span>
                 </h1>
                 <p class="text-gray-400 text-lg mb-8 max-w-lg">
-                    Sistema completo para gestão de sua oficina. 
-                    Controle ordens de serviço, estoque de peças e financeiro 
-                    em um único lugar. Tudo online e em tempo real.
+                    Mais de 4 anos de experiência em manutenção automotiva. 
+                    Serviços especializados, peças de qualidade e atendimento de excelência.
                 </p>
-                <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
-                    <a href="login.php" class="bg-accent hover:bg-accentLight text-white px-8 py-3 rounded-lg font-semibold transition pulse-glow inline-flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-5-5m5 5l5-5m-5 5h12m-9-9h6m-6 6h6"/>
-                        </svg>
-                        Acessar Sistema
+                <div class="flex gap-4">
+                    <a href="#contato" class="bg-accent hover:bg-blue-500 px-6 py-3 rounded-lg font-semibold transition">
+                        Agendar Serviço
                     </a>
-                    <a href="#features" class="border border-gray-700 text-gray-300 hover:text-white hover:border-accent px-8 py-3 rounded-lg font-semibold transition inline-flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Saber Mais
+                    <a href="cliente.php" class="border border-gray-600 hover:border-accent px-6 py-3 rounded-lg font-semibold transition">
+                        Área do Cliente
                     </a>
                 </div>
-                
-                <!-- Stats -->
-                <div class="grid grid-cols-3 gap-6 mt-10 pt-8 border-t border-gray-800">
-                    <div>
-                        <div class="text-2xl font-bold text-accent">100%</div>
-                        <div class="text-gray-500 text-sm">Online</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-accent">R$</div>
-                        <div class="text-gray-500 text-sm">Financeiro</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl font-bold text-accent">+</div>
-                        <div class="text-gray-500 text-sm">Estoque</div>
-                    </div>
-                </div>
             </div>
-
-            <!-- Right - Hero Image/Graphic -->
-            <div class="fade-in hidden lg:flex items-center justify-center">
-                <div class="relative">
-                    <div class="w-64 h-64 rounded-full border-4 border-accent/30 flex items-center justify-center">
-                        <div class="w-48 h-48 rounded-full border-4 border-accent/50 flex items-center justify-center">
-                            <div class="w-32 h-32 rounded-full border-4 border-accent flex items-center justify-center">
-                                <svg class="w-16 h-16 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Features Section -->
-    <section id="features" class="py-20 border-t border-gray-800">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-3xl font-bold text-white text-center mb-4">Funcionalidades Completas</h2>
-            <p class="text-gray-400 text-center mb-12">Tudo que você precisa para gerenciar sua oficina</p>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Feature 1 -->
-                <div class="glass p-6 rounded-xl">
-                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            <div class="hidden md:flex items-center justify-center">
+                <div class="relative w-64 h-64">
+                    <div class="absolute inset-0 border-4 border-accent/30 rounded-full animate-pulse"></div>
+                    <div class="absolute inset-8 border-4 border-accent/50 rounded-full"></div>
+                    <div class="absolute inset-16 border-4 border-accent rounded-full flex items-center justify-center">
+                        <svg class="w-16 h-16 text-accent" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
                         </svg>
                     </div>
-                    <h3 class="text-white font-semibold mb-2">Ordens de Serviço</h3>
-                    <p class="text-gray-400 text-sm">Gerencie OS do orçamento à entrega com controle total de serviços e peças.</p>
-                </div>
-                
-                <!-- Feature 2 -->
-                <div class="glass p-6 rounded-xl">
-                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-white font-semibold mb-2">Estoque</h3>
-                    <p class="text-gray-400 text-sm">Controle completo de peças com alertas automáticos de estoque baixo.</p>
-                </div>
-                
-                <!-- Feature 3 -->
-                <div class="glass p-6 rounded-xl">
-                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-white font-semibold mb-2">Financeiro</h3>
-                    <p class="text-gray-400 text-sm">Faturamento, vendas e relatórios por período detalhado.</p>
-                </div>
-                
-                <!-- Feature 4 -->
-                <div class="glass p-6 rounded-xl">
-                    <div class="w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-white font-semibold mb-2">Cadastros</h3>
-                    <p class="text-gray-400 text-sm">Clientes, veículos, funcionários e fornecedores organizados.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="py-16 border-t border-gray-800">
+    <!-- Sobre -->
+    <section id="sobre" class="py-16 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-white text-center mb-12">Nossa História</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl font-bold text-accent">4+</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Anos de Experiência</h3>
+                    <p class="text-gray-400 text-sm">Tradição e conhecimento acumulado ao longo dos anos</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl font-bold text-accent">500+</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Clientes Atendidos</h3>
+                    <p class="text-gray-400 text-sm">Famílias que confiam em nosso trabalho</p>
+                </div>
+                <div class="text-center p-6">
+                    <div class="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <span class="text-3xl font-bold text-accent">100%</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Satisfação</h3>
+                    <p class="text-gray-400 text-sm">Compromisso com a qualidade</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Serviços -->
+    <section id="servicos" class="py-16 border-t border-gray-800">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-3xl font-bold text-white text-center mb-12">Nossos Serviços</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-darker p-6 rounded-xl border border-gray-800">
+                    <svg class="w-10 h-10 text-accent mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-white mb-2">Manutenção Geral</h3>
+                    <p class="text-gray-400 text-sm">Troca de óleo, filtros, velas e revisão completa do seu veículo.</p>
+                </div>
+                <div class="bg-darker p-6 rounded-xl border border-gray-800">
+                    <svg class="w-10 h-10 text-accent mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2m0-10a2 2 0 01-2-2h2a2 2 0 012 2"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-white mb-2">Freios e Suspensão</h3>
+                    <p class="text-gray-400 text-sm">Pastilhas, discos, amortecedores e alinhamento.</p>
+                </div>
+                <div class="bg-darker p-6 rounded-xl border border-gray-800">
+                    <svg class="w-10 h-10 text-accent mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-white mb-2">Autopeças</h3>
+                    <p class="text-gray-400 text-sm">Diversas peças originais e compatíveis para seu veículo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contato -->
+    <section id="contato" class="py-16 border-t border-gray-800">
         <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-2xl font-bold text-white mb-4">Pronto para melhorar sua gestão?</h2>
-            <p class="text-gray-400 mb-8">Acesse o sistema agora mesmo e comece a gerenciar sua oficina de forma profissional.</p>
-            <a href="login.php" class="bg-accent hover:bg-accentLight text-white px-8 py-3 rounded-lg font-semibold text-lg transition inline-flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-5-5m5 5l5-5m-5 5h12m-9-9h6m-6 6h6"/>
-                </svg>
-                Acessar Sistema
+            <h2 class="text-3xl font-bold text-white mb-8">Entre em Contato</h2>
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <svg class="w-8 h-8 text-accent mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.489a1 1 0 01-.502 1.21l-2.331 1.138a10.972 10.972 0 01-2.417 2.416l1.138 2.331a1 1 0 01.21.502l4.489 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <p class="text-white font-semibold">(11) 99999-9999</p>
+                    <p class="text-gray-400 text-sm">WhatsApp</p>
+                </div>
+                <div>
+                    <svg class="w-8 h-8 text-accent mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-5 4v1a3 3 0 003 3h1a3 3 0 003-3v-1m-4-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <p class="text-white font-semibold">contato@motorprime.com.br</p>
+                    <p class="text-gray-400 text-sm">Email</p>
+                </div>
+                <div>
+                    <svg class="w-8 h-8 text-accent mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243A8 8 0 1117.657 16.657z"/>
+                    </svg>
+                    <p class="text-white font-semibold">Rua Exemplo, 123</p>
+                    <p class="text-gray-400 text-sm">São Paulo/SP</p>
+                </div>
+            </div>
+            <a href="cliente.php" class="inline-block bg-accent hover:bg-blue-500 px-8 py-3 rounded-lg font-semibold transition">
+                Agendar Agora
             </a>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-8 border-t border-gray-800">
-        <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <svg class="w-8 h-8 text-accent" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
-                </svg>
-                <span class="text-gray-400">Motor Prime © 2024</span>
-            </div>
-            <div class="text-gray-500 text-sm">
-                Sistema de Gestão para Oficina Mecânica
-            </div>
-        </div>
+    <footer class="py-8 border-t border-gray-800 text-center">
+        <p class="text-gray-500 text-sm">
+            © 2024 Motor Prime - Todos os direitos reservados
+        </p>
     </footer>
 </body>
 </html>
