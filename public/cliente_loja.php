@@ -83,31 +83,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Finalize order
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'finalizar_pedido') {
-    if (!empty($_SESSION['carrinho'])) {
-        $itens = [];
+    require_once __DIR__ . '/../app/helpers/helpers.php';
+    requireCsrf();
+    if (empty($_SESSION['carrinho'])) {
+        flash('error', 'Carrinho vazio');
+        redirect('cliente_loja.php?acao=ver_carrinho');
+    }
+    
+    $formaPagamento = cleanInput($_POST['forma_pagamento'] ?? 'dinheiro');
+    $allowedPag = ['dinheiro', 'pix', 'cartao'];
+    if (!in_array($formaPagamento, $allowedPag)) {
+        $formaPagamento = 'dinheiro';
+    }
+    
+    $pdo = $db->getConnection();
+    try {
+        $pdo->beginTransaction();
         $total = 0;
-        
-        foreach ($_SESSION['carrinho'] as $item) {
-            $subtotal = $item['preco'] * $item['quantidade'];
-            $total += $subtotal;
-            $itens[] = $item['codigo'] . ' - ' . $item['descricao'] . ' (x' . $item['quantidade'] . ')';
+        foreach ($_SESSION['carrinho'] as $key => $item) {
+            $stmt = $pdo->prepare("SELECT id, preco_venda, quantidade, ativo FROM pecas WHERE id = ? FOR UPDATE");
+            $stmt->execute([$item['id']]);
+            $peca = $stmt->fetch();
+            if (!$peca || !$peca['ativo'] || $peca['quantidade'] < $item['quantidade']) {
+                throw new Exception('Estoque insuficiente ou produto indisponível');
+            }
+            $preco = (float)$peca['preco_venda'];
+            $total += $preco * (int)$item['quantidade'];
+            $_SESSION['carrinho'][$key]['preco'] = $preco;
         }
         
-        $db->query(
-            "INSERT INTO pedidos_cliente (cliente_id, tipo, descricao, quantidade, valor_total, situacao) VALUES (?, 'pedido', ?, ?, ?, 'pendente')",
-            [$clienteId, implode(' | ', $itens), count($_SESSION['carrinho']), $total]
-        );
+        $stmt = $pdo->prepare("INSERT INTO pedidos (cliente_id, status, valor_total, forma_pagamento) VALUES (?, 'pendente', ?, ?)");
+        $stmt->execute([$clienteId, $total, $formaPagamento]);
+        $pedidoId = $pdo->lastInsertId();
         
-        // Decrease stock
+        $usuarioId = $_SESSION['usuario']['id'] ?? null;
         foreach ($_SESSION['carrinho'] as $item) {
-            $db->query("UPDATE pecas SET quantidade = quantidade - ? WHERE id = ?", [$item['quantidade'], $item['id']]);
+            $stmt = $pdo->prepare("INSERT INTO pedido_itens (pedido_id, peca_id, quantidade, valor_unitario) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$pedidoId, $item['id'], $item['quantidade'], $item['preco']]);
+            $stmt = $pdo->prepare("UPDATE pecas SET quantidade = quantidade - ? WHERE id = ? AND quantidade >= ?");
+            $stmt->execute([$item['quantidade'], $item['id'], $item['quantidade']]);
+            if ($stmt->rowCount() === 0) {
+                throw new Exception('Falha ao baixar estoque');
+            }
+            $stmt = $pdo->prepare("INSERT INTO estoque_movimentacoes (peca_id, tipo, quantidade, preco_unitario, observacoes, usuario_id) VALUES (?, 'saida', ?, ?, ?, ?)");
+            $stmt->execute([$item['id'], $item['quantidade'], $item['preco'], 'Pedido #' . $pedidoId, $usuarioId]);
         }
         
+        $pdo->commit();
         $_SESSION['carrinho'] = [];
         flash('success', 'Pedido realizado com sucesso! Status: Pendente');
+        redirect('cliente_loja.php');
+    } catch (Exception $e) {
+        $pdo->rollBack();
+        flash('error', $e->getMessage());
+        redirect('cliente_loja.php?acao=ver_carrinho');
     }
-    header('Location: cliente_loja.php');
-    exit;
 }
 
 // Get available parts
