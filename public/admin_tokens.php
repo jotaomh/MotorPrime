@@ -1,175 +1,135 @@
 <?php
 require_once __DIR__ . '/../app/bootstrap.php';
-
+require_once __DIR__ . '/../app/middleware/auth.php';
 
 requireAuth();
-requireAdmin();
+if (!isAdmin()) {
+    flash('error', 'Acesso restrito');
+    redirect('dashboard.php');
+}
 
-// Generate token
+$db = db();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'gerar') {
-    $cargo = sanitize($_POST['cargo'] ?? '');
-    
-    if (empty($cargo)) {
-        flash('error', 'Selecione o cargo');
-        header('Location: admin_tokens.php');
-        exit;
+    requireCsrf();
+    $cargo = $_POST['cargo'] ?? 'vendedor';
+    if (!in_array($cargo, ['admin', 'mecanico', 'vendedor'])) {
+        $cargo = 'vendedor';
     }
-    
-    $token = bin2hex(random_bytes(16));
-    $expires = date('Y-m-d H:i:s', strtotime('+7 days'));
-    
-    $db = db();
-    $db->query(
-        "INSERT INTO tokens_cadastro (token, cargo, created_by, expires_at) VALUES (?, ?, ?, ?)",
-        [$token, $cargo, auth()['id'], $expires]
-    );
-    
-    flash('success', 'Token gerado com sucesso!');
-    header('Location: admin_tokens.php');
-    exit;
+    $token = bin2hex(random_bytes(32));
+    $expira = date('Y-m-d H:i:s', strtotime('+24 hours'));
+    $createdBy = auth()['id'] ?? null;
+    $stmt = $db->query("INSERT INTO tokens_cadastro (token, cargo, created_by, expires_at) VALUES (?, ?, ?, ?)", [$token, $cargo, $createdBy, $expira]);
+    flash('success', 'Token gerado');
+    redirect('admin_tokens.php');
 }
 
 // Delete token
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['id'])) {
-        requireCsrf();
+    requireCsrf();
     $id = (int)$_POST['id'];
-    $db = db();
     $db->query("DELETE FROM tokens_cadastro WHERE id = ?", [$id]);
     flash('success', 'Token excluído');
     redirect('admin_tokens.php');
 }
 
-// Get all tokens
-$db = db();
-$stmt = $db->query("
-    SELECT t.*, u.nome as creator_nome 
-    FROM tokens_cadastro t
-    JOIN usuarios u ON t.created_by = u.id
-    ORDER BY t.created_at DESC
-");
+$stmt = $db->query("SELECT * FROM tokens_cadastro ORDER BY created_at DESC");
 $tokens = $stmt->fetchAll();
+$flash = getFlash('success') ?? getFlash('error');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motor Prime - Gerenciar Tokens</title>
+    <title>Motor Prime - Tokens</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        accent: '#3b82f6',
-                        dark: '#0a0a0a',
-                        darker: '#121212',
-                        darkGray: '#1a1a1a'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0a0a; min-height: 100vh; }
-    </style>
 </head>
-<body class="text-gray-100">
-    <nav class="bg-darker border-b border-gray-800">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <a href="dashboard.php" class="text-white text-sm hover:text-accent">← Voltar</a>
-                <span class="text-xl font-bold text-white">Motor Prime</span>
-            </div>
-            <span class="text-sm text-gray-400"><?= auth()['nome'] ?></span>
+<body class="bg-gray-100">
+    <nav class="bg-blue-900 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Motor Prime</h1>
+            <a href="dashboard.php" class="hover:underline">Voltar</a>
         </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-6 max-w-4xl">
-        <h1 class="text-2xl font-bold text-white mb-6">Gerenciar Tokens de Cadastro</h1>
+    <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-6">Gerenciar Tokens de Cadastro</h2>
 
-        <!-- Generate Token Form -->
-        <div class="bg-darker rounded-lg p-6 border border-gray-800 mb-6">
-            <h2 class="text-lg font-semibold text-white mb-4">Gerar Novo Token</h2>
-            <form method="POST">
+        <?php if ($flash): ?>
+        <div class="mb-4 p-4 rounded <?= ($flash['type'] === 'error') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700' ?>">
+            <?= e($flash['message']) ?>
+        </div>
+        <?php endif; ?>
+
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">Gerar Novo Token</h3>
+            <form method="POST" class="flex gap-4">
+                <?php csrf_field(); ?>
                 <input type="hidden" name="action" value="gerar">
-                <div class="flex gap-4">
-                    <select name="cargo" required class="flex-1 bg-darkGray border border-gray-700 rounded px-4 py-3 text-white">
-                        <option value="">Selecione o cargo</option>
-                        <option value="mecanico">Mecânico</option>
-                        <option value="vendedor">Vendedor</option>
-                    </select>
-                    <button type="submit" class="bg-accent hover:bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold">
-                        Gerar Token
-                    </button>
-                </div>
+                <select name="cargo" class="border rounded px-4 py-2">
+                    <option value="vendedor">Vendedor</option>
+                    <option value="mecanico">Mecânico</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Gerar Token</button>
             </form>
         </div>
 
-        <!-- Messages -->
-        <?php if (flash('error')): ?>
-            <div class="bg-red-900/30 border border-red-800 text-red-400 px-4 py-3 rounded mb-4"><?= flash('error') ?></div>
-        <?php endif; ?>
-        <?php if (flash('success')): ?>
-            <div class="bg-green-900/30 border border-green-800 text-green-400 px-4 py-3 rounded mb-4"><?= flash('success') ?></div>
-        <?php endif; ?>
-
-        <!-- Tokens List -->
-        <div class="bg-darker rounded-lg border border-gray-800">
-            <div class="p-4 border-b border-gray-800">
-                <h2 class="text-lg font-semibold text-white">Tokens Ativos</h2>
-            </div>
-            <div class="p-4 overflow-x-auto">
-                <table class="w-full">
-                    <thead>
-                        <tr class="text-gray-500 text-sm border-b border-gray-800">
-                            <th class="pb-2 text-left">Token</th>
-                            <th class="pb-2 text-left">Cargo</th>
-                            <th class="pb-2 text-left">Criado por</th>
-                            <th class="pb-2 text-left">Expira</th>
-                            <th class="pb-2 text-left">Status</th>
-                            <th class="pb-2 text-left">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($tokens as $t): ?>
-                        <tr class="border-b border-gray-800">
-                            <td class="py-3 font-mono text-accent"><?= $t['token'] ?></td>
-                            <td class="py-3"><?= ucfirst($t['cargo']) ?></td>
-                            <td class="py-3 text-gray-400"><?= $t['creator_nome'] ?></td>
-                            <td class="py-3 text-gray-400"><?= formatDate($t['expires_at']) ?></td>
-                            <td class="py-3">
-                                <?php if ($t['used']): ?>
-                                    <span class="text-gray-500">Usado</span>
-                                <?php else: ?>
-                                    <span class="text-green-400">Ativo</span>
-                                <?php endif; ?>
-                            </td>
-                            <td class="py-3">
-                                <form method="POST" class="inline" onsubmit="return confirm('Excluir token?')"><?php require_once __DIR__ . '/../app/helpers/helpers.php'; csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $t['id'] ?>"><button class="text-red-400 hover:text-red-300 text-sm">Excluir</button></form>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                        <?php if (empty($tokens)): ?>
-                        <tr><td colspan="6" class="py-4 text-center text-gray-500">Nenhum token gerado</td></tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Instructions -->
-        <div class="mt-6 bg-darker rounded-lg p-6 border border-gray-800">
-            <h2 class="text-lg font-semibold text-white mb-2">Como usar</h2>
-            <ol class="text-gray-400 text-sm space-y-2 list-decimal list-inside">
-                <li>Ger um token para o cargo desejado (Mecânico ou Vendedor)</li>
-                <li>Copie o token gerado</li>
-                <li>Compartilhe o link: <code class="bg-darkGray px-2 py-1 rounded">seusite.com/login.php?token=TOKEN</code></li>
-                <li>O funcionário poderá se cadastrar usando esse token</li>
-                <li>Cada token pode ser usado apenas uma vez e expira em 7 dias</li>
-            </ol>
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Token</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cargo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Expira em</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <?php foreach ($tokens as $t): ?>
+                    <tr>
+                        <td class="px-6 py-4 text-sm font-mono text-gray-900">
+                            <span class="token-text"><?= e($t['token']) ?></span>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-500"><?= e($t['cargo']) ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-500"><?= e($t['expires_at']) ?></td>
+                        <td class="px-6 py-4 text-sm">
+                            <?php if ($t['used_at']): ?>
+                                <span class="text-red-600">Usado</span>
+                            <?php elseif (strtotime($t['expires_at']) < time()): ?>
+                                <span class="text-yellow-600">Expirado</span>
+                            <?php else: ?>
+                                <span class="text-green-600">Válido</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="px-6 py-4 text-sm flex gap-2">
+                            <?php if (!$t['used_at'] && strtotime($t['expires_at']) > time()): ?>
+                            <button onclick="copiarToken('<?= e($t['token']) ?>')" class="text-blue-600 hover:text-blue-900">Copiar link</button>
+                            <?php endif; ?>
+                            <?php if (!$t['used_at']): ?>
+                            <form method="POST" class="inline" onsubmit="return confirm('Excluir token?')">
+                                <?php csrf_field(); ?>
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="id" value="<?= $t['id'] ?>">
+                                <button class="text-red-600 hover:text-red-900">Excluir</button>
+                            </form>
+                            <?php endif; ?>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
         </div>
     </div>
+    <script>
+        function copiarToken(token) {
+            var url = window.location.origin + '/cadastrar.php?token=' + token;
+            navigator.clipboard.writeText(url).then(function() {
+                alert('Link copiado!');
+            });
+        }
+    </script>
 </body>
 </html>
