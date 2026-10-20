@@ -1,33 +1,22 @@
 <?php
 
-$envFile = __DIR__ . '/../.env';
-if (file_exists($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        if (strpos($line, '#') === 0) continue;
-        if (strpos($line, '=') === false) continue;
-        list($key, $value) = explode('=', $line, 2);
-        $key = trim($key);
-        $value = trim($value);
-        $_ENV[$key] = $value;
-        putenv("$key=$value");
-    }
+$debug = $_ENV['DEBUG'] ?? 'false';
+if (is_string($debug)) {
+    $debug = strtolower($debug) === 'true' || $debug === '1';
+} else {
+    $debug = (bool)$debug;
 }
 
 define('DB_HOST', $_ENV['DB_HOST'] ?? 'localhost');
 define('DB_NAME', $_ENV['DB_NAME'] ?? 'motor_prime');
-define('DB_USER', $_ENV['DB_USER'] ?? 'dev');
-define('DB_PASS', $_ENV['DB_PASS'] ?? '1234');
+define('DB_USER', $_ENV['DB_USER']);
+define('DB_PASS', $_ENV['DB_PASS']);
 define('DB_CHARSET', $_ENV['DB_CHARSET'] ?? 'utf8mb4');
 
 define('SESSION_NAME', $_ENV['SESSION_NAME'] ?? 'MOTOR_PRIME');
 define('SESSION_LIFETIME', (int)($_ENV['SESSION_LIFETIME'] ?? 3600));
 
-define('DEBUG', $_ENV['DEBUG'] ?? true);
-
-function config($key, $default = null) {
-    return $_ENV[$key] ?? $default;
-}
+define('DEBUG_MODE', $debug);
 
 class Database {
     private static $instance = null;
@@ -45,7 +34,8 @@ class Database {
         try {
             $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
-            if (DEBUG) {
+            @file_put_contents((defined('LOG_PATH') ? LOG_PATH : __DIR__ . '/../../storage/logs') . '/error.log', date('Y-m-d H:i:s') . ' Erro na conexão: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+            if (defined('DEBUG_MODE') && DEBUG_MODE) {
                 die("Erro na conexão: " . $e->getMessage());
             } else {
                 die("Erro ao conectar ao banco de dados");
@@ -80,17 +70,21 @@ function db() {
 }
 
 function formatMoney($value) {
-    return 'R$ ' . number_format($value, 2, ',', '.');
+    return 'R$ ' . number_format((float)$value, 2, ',', '.');
 }
 
 function formatDate($date) {
     if (empty($date)) return '';
-    return date('d/m/Y', strtotime($date));
+    $timestamp = strtotime($date);
+    if ($timestamp === false) return '';
+    return date('d/m/Y', $timestamp);
 }
 
 function formatDateTime($date) {
     if (empty($date)) return '';
-    return date('d/m/Y H:i', strtotime($date));
+    $timestamp = strtotime($date);
+    if ($timestamp === false) return '';
+    return date('d/m/Y H:i', $timestamp);
 }
 
 function formatPlate($plate) {
@@ -125,51 +119,4 @@ function formatPhone($phone) {
         return '(' . substr($phone, 0, 2) . ') ' . substr($phone, 2, 4) . '-' . substr($phone, 6);
     }
     return $phone;
-}
-
-function redirect($url) {
-    header("Location: $url");
-    exit;
-}
-
-function flash($key, $message = null, $type = 'info') {
-    if ($message === null) {
-        return $_SESSION['flash'][$key] ?? null;
-    }
-    $_SESSION['flash'][$key] = $message;
-    $_SESSION['flash_type'][$key] = $type;
-}
-
-function getFlash($key) {
-    $msg = $_SESSION['flash'][$key] ?? null;
-    $type = $_SESSION['flash_type'][$key] ?? 'info';
-    unset($_SESSION['flash'][$key], $_SESSION['flash_type'][$key]);
-    return $msg ? ['message' => $msg, 'type' => $type] : null;
-}
-
-function auth() {
-    return $_SESSION['usuario'] ?? null;
-}
-
-function isAdmin() {
-    return isset($_SESSION['usuario']['cargo']) && $_SESSION['usuario']['cargo'] === 'admin';
-}
-
-function isMecanico() {
-    return isset($_SESSION['usuario']['cargo']) && $_SESSION['usuario']['cargo'] === 'mecanico';
-}
-
-function isVendedor() {
-    return isset($_SESSION['usuario']['cargo']) && $_SESSION['usuario']['cargo'] === 'vendedor';
-}
-
-function sanitize($data) {
-    if (is_array($data)) {
-        return array_map('sanitize', $data);
-    }
-    return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
-}
-
-function generateToken($length = 32) {
-    return bin2hex(random_bytes($length / 2));
 }

@@ -1,8 +1,16 @@
 <?php
 
+require_once __DIR__ . '/../helpers/helpers.php';
+
 function requireAuth() {
     if (!auth()) {
-        redirect('/public/login.php');
+        redirect('login.php');
+    }
+}
+
+function requireClienteAuth() {
+    if (!clienteAuth()) {
+        redirect('cliente.php');
     }
 }
 
@@ -10,12 +18,12 @@ function requireAdmin() {
     requireAuth();
     if (!isAdmin()) {
         flash('error', 'Acesso restrito');
-        redirect('/public/dashboard.php');
+        redirect('dashboard.php');
     }
 }
 
 function checkPermission($cargo) {
-    if (!auth() || $_SESSION['usuario']['cargo'] !== $cargo) {
+    if (!auth() || ($_SESSION['usuario']['cargo'] ?? '') !== $cargo) {
         return false;
     }
     return true;
@@ -24,5 +32,13 @@ function checkPermission($cargo) {
 function hasPermission($requiredCargo) {
     $cargos = ['admin' => 1, 'mecanico' => 2, 'vendedor' => 3];
     $userCargo = auth()['cargo'] ?? '';
-    return ($cargos[$userCargo] ?? 4) <= ($cargos[$requiredCargo] ?? 4);
+    if (($cargos[$userCargo] ?? 99) === 1) {
+        return true;
+    }
+    $allowed = [
+        'admin' => ['admin', 'mecanico', 'vendedor'],
+        'mecanico' => ['mecanico'],
+        'vendedor' => ['vendedor']
+    ];
+    return in_array($requiredCargo, $allowed[$userCargo] ?? []);
 }
