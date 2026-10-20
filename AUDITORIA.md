@@ -19,3 +19,10 @@
 
 ## Observações
 - Alguns arquivos ainda usam session_start() direto e estruturas antigas; migração gradual conforme necessidade.
+
+## FASE 3 - Parciais
+- API com autenticação de funcionário e permissão por módulo.
+- CSRF helper e aplicado em ações sensíveis.
+- Remoção via GET trocada por POST com CSRF (tokens, remover item do carrinho).
+- Helpers de validação adicionados, logout separado com CSRF.
+- Rate limiter básico para login.
