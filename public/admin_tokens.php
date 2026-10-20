@@ -32,13 +32,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Delete token
-if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
-    $id = (int)$_GET['id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['id'])) {
+    require_once __DIR__ . '/../app/helpers/helpers.php';
+    requireCsrf();
+    $id = (int)$_POST['id'];
     $db = db();
     $db->query("DELETE FROM tokens_cadastro WHERE id = ?", [$id]);
     flash('success', 'Token excluído');
-    header('Location: admin_tokens.php');
-    exit;
+    redirect('admin_tokens.php');
 }
 
 // Get all tokens
@@ -149,7 +150,7 @@ $tokens = $stmt->fetchAll();
                                 <?php endif; ?>
                             </td>
                             <td class="py-3">
-                                <a href="admin_tokens.php?action=delete&id=<?= $t['id'] ?>" class="text-red-400 hover:text-red-300 text-sm">Excluir</a>
+                                <form method="POST" class="inline" onsubmit="return confirm('Excluir token?')"><?php require_once __DIR__ . '/../app/helpers/helpers.php'; csrf_field(); ?><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="<?= $t['id'] ?>"><button class="text-red-400 hover:text-red-300 text-sm">Excluir</button></form>
                             </td>
                         </tr>
                         <?php endforeach; ?>
