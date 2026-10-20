@@ -1,7 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../app/bootstrap.php';
 
-require_once __DIR__ . '/../app/config/database.php';
 
 if (!isset($_SESSION['cliente'])) {
     header('Location: cliente.php');
@@ -83,8 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Finalize order
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'finalizar_pedido') {
-    require_once __DIR__ . '/../app/helpers/helpers.php';
-    requireCsrf();
+        requireCsrf();
     if (empty($_SESSION['carrinho'])) {
         flash('error', 'Carrinho vazio');
         redirect('cliente_loja.php?acao=ver_carrinho');

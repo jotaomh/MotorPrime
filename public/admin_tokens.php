@@ -1,8 +1,6 @@
 <?php
-session_start();
+require_once __DIR__ . '/../app/bootstrap.php';
 
-require_once __DIR__ . '/../app/config/database.php';
-require_once __DIR__ . '/../app/middleware/auth.php';
 
 requireAuth();
 requireAdmin();
@@ -33,8 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Delete token
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete' && isset($_POST['id'])) {
-    require_once __DIR__ . '/../app/helpers/helpers.php';
-    requireCsrf();
+        requireCsrf();
     $id = (int)$_POST['id'];
     $db = db();
     $db->query("DELETE FROM tokens_cadastro WHERE id = ?", [$id]);

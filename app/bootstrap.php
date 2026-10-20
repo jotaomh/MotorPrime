@@ -1,15 +1,34 @@
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
+    require_once __DIR__ . '/../vendor/autoload.php';
+} else {
+    die("Erro: vendor/autoload.php não encontrado. Rode 'composer install' na raiz do projeto.");
+}
 
-$dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__));
-$dotenv->load();
+$dotenvPath = dirname(__DIR__);
+if (file_exists($dotenvPath . '/.env')) {
+    try {
+        $dotenv = Dotenv\Dotenv::createImmutable($dotenvPath);
+        $dotenv->load();
+    } catch (Exception $e) {
+        // ignore if dotenv not configured
+    }
+}
 
-$required = ['DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASS'];
+$required = ['DB_HOST', 'DB_NAME', 'DB_USER'];
 foreach ($required as $key) {
     if (!isset($_ENV[$key]) || $_ENV[$key] === '') {
         die("Erro de configuração: variável obrigatória ausente no .env: $key");
     }
+}
+
+if (!isset($_ENV['DB_PASS'])) {
+    $_ENV['DB_PASS'] = '';
+}
+
+if (!isset($_ENV['APP_ENV'])) {
+    $_ENV['APP_ENV'] = 'local';
 }
 
 define('BASE_PATH', dirname(__DIR__));
@@ -17,6 +36,7 @@ define('APP_PATH', __DIR__);
 define('PUBLIC_PATH', BASE_PATH . '/public');
 define('STORAGE_PATH', BASE_PATH . '/storage');
 define('LOG_PATH', STORAGE_PATH . '/logs');
+define('APP_ENV', $_ENV['APP_ENV']);
 
 if (!is_dir(STORAGE_PATH)) {
     @mkdir(STORAGE_PATH, 0755, true);
@@ -34,7 +54,6 @@ if (is_string($debug)) {
 define('DEBUG', $debug);
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 $baseUrl = rtrim(str_replace(basename($scriptName), '', dirname($scriptName)), '/\\');
 if ($baseUrl === DIRECTORY_SEPARATOR || $baseUrl === '.') {
@@ -74,3 +93,4 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/helpers/helpers.php';
 require_once __DIR__ . '/middleware/auth.php';
 require_once __DIR__ . '/helpers/Permissao.php';
+require_once __DIR__ . '/helpers/Seguranca.php';
