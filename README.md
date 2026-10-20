@@ -75,3 +75,9 @@ php -S localhost:8000 -t public
 - Financeiro e vendas
 - Área do cliente (login, loja, solicitações de serviço)
 - Sistema de tokens para cadastro de funcionários
+
+## Contas de teste (local)
+Execute em ambiente local:
+```bash
+php scripts/seed-dev.php
+```
