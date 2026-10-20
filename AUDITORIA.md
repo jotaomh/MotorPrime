@@ -30,3 +30,4 @@
 ## FASE 4 - Início
 - Criados App\Services\OsService e App\Services\EstoqueService para centralizar recálculo de totais e movimentações.
 - Preparado para transações em checkout/OS/estoque.
+- Checkout da loja com transação, revalidação de estoque/preço, baixa e movimentação em estoque.
