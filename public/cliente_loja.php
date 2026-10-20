@@ -16,7 +16,7 @@ if (!isset($_SESSION['carrinho'])) {
 }
 
 // Logout
-if ($_GET['acao'] === 'logout') {
+if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
     $_SESSION['carrinho'] = [];
     session_destroy();
     header('Location: cliente.php');

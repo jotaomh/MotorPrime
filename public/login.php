@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-// Limpar mensagens antigas da sessão
-unset($_SESSION['flash'], $_SESSION['flash_type']);
 
 require_once __DIR__ . '/../app/config/database.php';
 

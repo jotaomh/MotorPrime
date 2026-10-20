@@ -18,7 +18,7 @@ if (!isset($_SESSION['carrinho'])) {
 $cartCount = count($_SESSION['carrinho']);
 
 // Logout
-if ($_GET['acao'] === 'logout') {
+if (isset($_GET['acao']) && $_GET['acao'] === 'logout') {
     session_destroy();
     header('Location: cliente.php');
     exit;

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 }
 
 // Delete token
-if ($_GET['action'] === 'delete' && isset($_GET['id'])) {
+if (isset($_GET['action']) && $_GET['action'] === 'delete' && isset($_GET['id'])) {
     $id = (int)$_GET['id'];
     $db = db();
     $db->query("DELETE FROM tokens_cadastro WHERE id = ?", [$id]);
