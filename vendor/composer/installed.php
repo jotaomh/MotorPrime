@@ -3,7 +3,7 @@
         'name' => 'motor-prime/app',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '3e4e9133a2602f0ee3429a81070bfaff4530e1fd',
+        'reference' => 'e7f1a8576f498efe4a0bcb8ece0a265e338f29f7',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -22,7 +22,7 @@
         'motor-prime/app' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '3e4e9133a2602f0ee3429a81070bfaff4530e1fd',
+            'reference' => 'e7f1a8576f498efe4a0bcb8ece0a265e338f29f7',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
