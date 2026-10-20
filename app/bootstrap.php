@@ -1,18 +1,21 @@
 <?php
 
-if (file_exists(__DIR__ . '/../vendor/autoload.php')) {
-    require_once __DIR__ . '/../vendor/autoload.php';
+$autoload = __DIR__ . '/../vendor/autoload.php';
+if (file_exists($autoload)) {
+    require_once $autoload;
 } else {
     die("Erro: vendor/autoload.php não encontrado. Rode 'composer install' na raiz do projeto.");
 }
 
 $dotenvPath = dirname(__DIR__);
 if (file_exists($dotenvPath . '/.env')) {
-    try {
-        $dotenv = Dotenv\Dotenv::createImmutable($dotenvPath);
-        $dotenv->load();
-    } catch (Exception $e) {
-        // ignore if dotenv not configured
+    if (class_exists('Dotenv\\Dotenv')) {
+        try {
+            $dotenv = Dotenv\Dotenv::createImmutable($dotenvPath);
+            $dotenv->load();
+        } catch (Exception $e) {
+            // ignore
+        }
     }
 }
 
@@ -26,7 +29,6 @@ foreach ($required as $key) {
 if (!isset($_ENV['DB_PASS'])) {
     $_ENV['DB_PASS'] = '';
 }
-
 if (!isset($_ENV['APP_ENV'])) {
     $_ENV['APP_ENV'] = 'local';
 }
@@ -61,15 +63,15 @@ if ($baseUrl === DIRECTORY_SEPARATOR || $baseUrl === '.') {
 }
 define('BASE_URL', $baseUrl);
 
-session_name($_ENV['SESSION_NAME'] ?? 'MOTOR_PRIME');
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => $_ENV['SESSION_PATH'] ?? '/',
-    'httponly' => true,
-    'samesite' => 'Lax',
-    'secure' => $protocol === 'https'
-]);
 if (session_status() === PHP_SESSION_NONE) {
+    session_name($_ENV['SESSION_NAME'] ?? 'MOTOR_PRIME');
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => $_ENV['SESSION_PATH'] ?? '/',
+        'httponly' => true,
+        'samesite' => 'Lax',
+        'secure' => $protocol === 'https'
+    ]);
     session_start();
 }
 
@@ -81,7 +83,7 @@ ini_set('error_log', LOG_PATH . '/error.log');
 set_exception_handler(function($exception) {
     $message = get_class($exception) . ': ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine();
     @file_put_contents(LOG_PATH . '/exception.log', date('Y-m-d H:i:s') . ' ' . $message . PHP_EOL . $exception->getTraceAsString() . PHP_EOL . PHP_EOL, FILE_APPEND);
-    if (DEBUG) {
+    if (defined('DEBUG') && DEBUG) {
         echo "<pre>" . htmlspecialchars($message) . "</pre>";
     } else {
         echo "Ocorreu um erro inesperado.";
