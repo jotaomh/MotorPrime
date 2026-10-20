@@ -1,14 +1,27 @@
 <?php
-session_start();
+require_once __DIR__ . '/../app/bootstrap.php';
 
 header('Content-Type: application/json');
 
-require_once __DIR__ . '/../app/config/database.php';
+require_once __DIR__ . '/../app/middleware/auth.php';
 
 $action = $_GET['action'] ?? '';
 
+if (!auth()) {
+    http_response_code(401);
+    echo json_encode(['error' => 'Não autorizado']);
+    exit;
+}
+
+$cargo = $_SESSION['usuario']['cargo'] ?? '';
+
 switch ($action) {
     case 'veiculos':
+        if (!\App\Helpers\Permissao::pode('veiculos')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Sem permissão']);
+            exit;
+        }
         $cliente_id = (int)($_GET['cliente_id'] ?? 0);
         
         if ($cliente_id > 0) {
@@ -31,7 +44,12 @@ switch ($action) {
         break;
         
     case 'clientes':
-        $termo = sanitize($_GET['q'] ?? '');
+        if (!\App\Helpers\Permissao::pode('clientes')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Sem permissão']);
+            exit;
+        }
+        $termo = cleanInput($_GET['q'] ?? '');
         
         if (strlen($termo) < 2) {
             echo json_encode([]);
@@ -39,7 +57,7 @@ switch ($action) {
         }
         
         $stmt = db()->query(
-            "SELECT id, nome, cpf, telefone, email FROM clientes WHERE nome LIKE ? AND ativo = 1 LIMIT 10",
+            "SELECT id, nome, LEFT(cpf, 3) as cpf_mask, telefone, email FROM clientes WHERE nome LIKE ? AND ativo = 1 LIMIT 10",
             ['%' . $termo . '%']
         );
         
@@ -47,7 +65,12 @@ switch ($action) {
         break;
         
     case 'pecas':
-        $termo = sanitize($_GET['q'] ?? '');
+        if (!\App\Helpers\Permissao::pode('estoque')) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Sem permissão']);
+            exit;
+        }
+        $termo = cleanInput($_GET['q'] ?? '');
         
         if (strlen($termo) < 1) {
             echo json_encode([]);
@@ -63,5 +86,7 @@ switch ($action) {
         break;
         
     default:
+        http_response_code(400);
         echo json_encode(['error' => 'Ação inválida']);
+        break;
 }
