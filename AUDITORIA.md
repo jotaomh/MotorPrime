@@ -31,3 +31,16 @@
 - Criados App\Services\OsService e App\Services\EstoqueService para centralizar recálculo de totais e movimentações.
 - Preparado para transações em checkout/OS/estoque.
 - Checkout da loja com transação, revalidação de estoque/preço, baixa e movimentação em estoque.
+
+## FASE AUTH
+Iniciando correção completa de login/cadastro.
+
+## FASE AUTH - Concluída (parcial)
+- Todas as páginas públicas migradas para app/bootstrap.php.
+- Login único por e-mail ou CPF com AuthService, CSRF, rate limit por banco e regeneração de sessão.
+- Cadastro de cliente com validação, vínculo a cliente pré-cadastrado sem senha, auto-login.
+- Cadastro de funcionário apenas por token com consumo atômico em transação.
+- cliente.php redireciona para login.php, cliente_auth.php removido.
+- index.php sem menção a funcionário/credenciais.
+- admin_tokens com botão "Copiar link".
+- seed-dev.php para contas locais.
