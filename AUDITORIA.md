@@ -26,3 +26,7 @@
 - Remoção via GET trocada por POST com CSRF (tokens, remover item do carrinho).
 - Helpers de validação adicionados, logout separado com CSRF.
 - Rate limiter básico para login.
+
+## FASE 4 - Início
+- Criados App\Services\OsService e App\Services\EstoqueService para centralizar recálculo de totais e movimentações.
+- Preparado para transações em checkout/OS/estoque.
