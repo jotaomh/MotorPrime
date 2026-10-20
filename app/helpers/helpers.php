@@ -130,3 +130,45 @@ function requireCsrf() {
         }
     }
 }
+
+function isValidEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+}
+
+function isValidCPF($cpf) {
+    $cpf = onlyDigits($cpf);
+    if (strlen($cpf) != 11) return false;
+    if (preg_match('/(\d)\1{10}/', $cpf)) return false;
+    for ($t = 9; $t < 11; $t++) {
+        for ($d = 0, $c = 0; $c < $t; $c++) {
+            $d += $cpf[$c] * (($t + 1) - $c);
+        }
+        $d = ((10 * $d) % 11) % 10;
+        if ($cpf[$c] != $d) return false;
+    }
+    return true;
+}
+
+function isValidCNPJ($cnpj) {
+    $cnpj = onlyDigits($cnpj);
+    if (strlen($cnpj) != 14) return false;
+    if (preg_match('/(\d)\1{13}/', $cnpj)) return false;
+    $b = [6,5,4,3,2,9,8,7,6,5,4,3,2];
+    for ($i = 0, $n = 0; $i < 12; $n += $cnpj[$i] * $b[++$i]);
+    if ($cnpj[12] != ((($n %= 11) < 2) ? 0 : 11 - $n)) return false;
+    for ($i = 0, $n = 0; $i < 13; $n += $cnpj[$i] * $b[++$i]);
+    if ($cnpj[13] != ((($n %= 11) < 2) ? 0 : 11 - $n)) return false;
+    return true;
+}
+
+function isValidPlate($plate) {
+    $plate = strtoupper(onlyDigits(str_replace(['-'], '', $plate)));
+    // allow with letters? better check format
+    $p = strtoupper(preg_replace('/[^A-Z0-9]/', '', $plate));
+    if (strlen($p) == 7) {
+        // antiga AAA9999 or mercosul AAA9A99 simplified
+        if (preg_match('/^[A-Z]{3}[0-9]{4}$/', $p)) return true;
+        if (preg_match('/^[A-Z]{3}[0-9][A-Z][0-9]{2}$/', $p)) return true;
+    }
+    return false;
+}
